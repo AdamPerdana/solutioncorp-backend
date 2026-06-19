@@ -31,7 +31,7 @@ class ProformaInvoice(models.Model):
 
     class Meta:
         db_table = 'proforma_invoice'
-        ordering = ['-created_at']  # Menampilkan invoice terbaru urutan teratas
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.nomor_invoice} - {self.pelanggan}"
@@ -43,7 +43,7 @@ class ProformaInvoiceItem(models.Model):
     nama_produk = models.CharField(max_length=255)
     qty = models.IntegerField()
     harga = models.IntegerField()
-    total = models.IntegerField()  # Hasil kalkulasi (qty * harga) dari POS
+    total = models.IntegerField()
 
     class Meta:
         db_table = 'proforma_invoice_item'
@@ -65,7 +65,7 @@ class PosTransaction(models.Model):
         ('Tempo', 'Tempo'),
     ]
 
-    nomor_invoice = models.CharField(max_length=50, unique=True)  # Terkunci unik agar tidak ada nomor nota ganda
+    nomor_invoice = models.CharField(max_length=50, unique=True)
     pelanggan = models.CharField(max_length=150)
     alamat = models.TextField(blank=True, null=True)
     tanggal = models.DateField()

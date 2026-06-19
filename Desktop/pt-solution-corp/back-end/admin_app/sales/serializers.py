@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer,ProformaInvoice,ProformaInvoiceItem,PosTransaction, PosTransactionItem
+from .models import Customer, ProformaInvoice, ProformaInvoiceItem, PosTransaction, PosTransactionItem
 from admin_app.inventory.models import Product
 
 
@@ -50,12 +50,19 @@ class PosTransactionItemSerializer(serializers.ModelSerializer):
 class PosTransactionSerializer(serializers.ModelSerializer):
     items = PosTransactionItemSerializer(many=True)
 
+    omset_murni = serializers.SerializerMethodField()
+
     class Meta:
         model = PosTransaction
         fields = [
-            'nomor_invoice', 'pelanggan', 'alamat', 'tanggal',
-            'metode_bayar', 'status', 'ongkir', 'grand_total', 'items'
+            'id', 'nomor_invoice', 'pelanggan', 'alamat', 'tanggal',
+            'metode_bayar', 'status', 'ongkir', 'grand_total', 'omset_murni', 'items'
         ]
+
+    def get_omset_murni(self, obj):
+        total_kotor = obj.grand_total or 0
+        nominal_ongkir = obj.ongkir or 0
+        return total_kotor - nominal_ongkir
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
@@ -67,7 +74,6 @@ class PosTransactionSerializer(serializers.ModelSerializer):
             try:
                 product = Product.objects.get(sku=item_data['sku'])
                 product.stok_aktual -= item_data['qty']
-
                 product.save()
 
             except Product.DoesNotExist:

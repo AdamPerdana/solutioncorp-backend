@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
 
     #(ADMIN APP)
     'admin_app.finance',
     'admin_app.inventory',
-    'admin_app.Laporan',
     'admin_app.sales',
+
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +127,36 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 CORS_ALLOW_ALL_ORIGINS = True
+
+from datetime import timedelta
+
+
+
+# ==============================================================================
+#  TOKEN JWT GLOBAL
+# ==============================================================================
+REST_FRAMEWORK = {
+    # Aktifkan gembok token JWT
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    # Kunci API secara global (Hanya user login yang bisa akses data)
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
+SIMPLE_JWT = {
+    # TOKEN UTAMA
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),
+
+    # TOKEN CADANGAN
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+
+    # AKTIFKAN ROTASI: Setiap kali kunci cadangan dipakai, Django langsung hapus
+    # dan cetak kunci cadangan yang baru
+    "ROTATE_REFRESH_TOKENS": True,
+
+    # Blacklist token lama yang sudah hangus agar tidak bisa digunakan kembali
+    "BLACKLIST_AFTER_ROTATION": True,
+}

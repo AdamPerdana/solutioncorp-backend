@@ -107,7 +107,7 @@ def generate_po_pdf_output(po, items):
     fill = False  # Zebra coloring
 
     for item in items:
-        # 🔥 Penyesuaian variabel properti item sesuai struktur database PurchaseOrderItem Django
+
         subtotal = item.qty * item.harga_beli
 
         if fill:
@@ -149,5 +149,5 @@ def generate_po_pdf_output(po, items):
              "Dokumen ini dicetak secara otomatis dari sistem PT Solution Corp Indonesia. Harap konfirmasi pesanan setelah diterima.",
              0, 1, 'C')
 
-    # Mengembalikan data byte string biner mentah PDF
+
     return pdf.output(dest='S')

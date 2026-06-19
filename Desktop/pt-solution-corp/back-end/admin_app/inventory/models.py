@@ -3,7 +3,7 @@ from django.utils import timezone
 
 
 # ==========================================================
-# [PRODUCT]
+# [ PRODUCT ]
 # ==========================================================
 class Product(models.Model):
     sku = models.CharField(max_length=50, unique=True)  # Kode unik barang (misal: PXTON-GEL-01)
@@ -64,3 +64,19 @@ class PurchaseOrderItem(models.Model):
 
     def __str__(self):
         return f"{self.sku} - {self.purchase_order.nomor_po}"
+
+
+# ==========================================================
+# [ LOCKING SYSTEM: PO COUNTER PERSIS POS ]
+# ==========================================================
+class PoCounter(models.Model):
+    tahun = models.IntegerField()
+    bulan = models.IntegerField()
+    nilai_counter = models.IntegerField(default=0)  # Menyimpan angka berjalan (misal: 10, 11, dst)
+
+    class Meta:
+        db_table = 'inventory_po_counter'
+        unique_together = ('tahun', 'bulan')  # Mencegah duplikasi baris data per bulan
+
+    def __str__(self):
+        return f"Counter PO {self.tahun}/{self.bulan} - Nilai: {self.nilai_counter}"
