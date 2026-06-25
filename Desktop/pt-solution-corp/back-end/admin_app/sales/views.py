@@ -241,13 +241,13 @@ class PosTransactionViewSet(viewsets.ModelViewSet):
             return Response({"error": "Terjadi kesalahan internal pada server database."},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         alamat_pengiriman = request.data.get('alamat', 'Melalui Loket Kasir POS Proyek')
-        jatuh_tempo_react = request.data.get('jatuhTempo')
-        items_input = request.data.get('items', [])
 
+        jatuh_tempo_react = request.data.get('jatuh_tempo', request.data.get('jatuhTempo'))
+
+        items_input = request.data.get('items', [])
 
         from admin_app.inventory.models import Product
 
@@ -257,7 +257,6 @@ class PosTransactionViewSet(viewsets.ModelViewSet):
 
             try:
                 produk_gudang = Product.objects.get(sku=sku_target)
-
 
                 if produk_gudang.stok_aktual < qty_diminta:
                     return Response(
@@ -271,7 +270,6 @@ class PosTransactionViewSet(viewsets.ModelViewSet):
                     {"error": f"Transaksi Ditolak! Produk dengan SKU {sku_target} tidak terdaftar di sistem gudang."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-
 
         data = {
             'nomor_invoice': request.data.get('nomorInvoice'),
@@ -300,18 +298,19 @@ class PosTransactionViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-
             self.perform_create(serializer)
 
             if data['metode_bayar'] == "TEMPO/KREDIT":
                 try:
-
-                    Piutang.objects.get_or_create(
+                    Piutang.objects.update_or_create(
                         nomor_invoice=data['nomor_invoice'],
                         defaults={
                             'pelanggan': data['pelanggan'],
                             'tanggal_transaksi': data['tanggal'],
+
+
                             'jatuh_tempo': jatuh_tempo_react if jatuh_tempo_react else data['tanggal'],
+
                             'total_tagihan': data['grand_total'],
                             'sisa_piutang': data['grand_total'],
                             'status_piutang': "Belum Lunas"
@@ -319,7 +318,6 @@ class PosTransactionViewSet(viewsets.ModelViewSet):
                     )
                 except Exception as piutang_err:
                     logger.error("Gagal mencatat mutasi piutang otomatis pada ledger finance: %s", str(piutang_err))
-
 
             payload_pdf = {
                 'nomor_invoice': data['nomor_invoice'],

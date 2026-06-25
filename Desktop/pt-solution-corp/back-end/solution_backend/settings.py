@@ -41,12 +41,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 
-    #(ADMIN APP)
+    #Admin App
     'admin_app.finance',
     'admin_app.inventory',
     'admin_app.sales',
-
     'dashboard',
+
+    #Marketplace App
+    'marketplace_app.home',
+    'marketplace_app.checkout',
+    'marketplace_app.product'
 ]
 
 MIDDLEWARE = [
@@ -160,3 +164,9 @@ SIMPLE_JWT = {
     # Blacklist token lama yang sudah hangus agar tidak bisa digunakan kembali
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+# URL publik untuk mengakses gambar di
+MEDIA_URL = '/produk_sterno/'
+
+# Lokasi folder fisik di komputer tempat foto
+MEDIA_ROOT = BASE_DIR / 'produk_sterno'

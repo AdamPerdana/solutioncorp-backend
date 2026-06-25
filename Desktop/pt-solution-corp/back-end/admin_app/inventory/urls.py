@@ -9,7 +9,7 @@ router.register(r'products', ProductViewSet, basename='product')
 #SUPPLIER
 router.register(r'suppliers', SupplierViewSet, basename='supplier')
 #PURCHASE ORDER(PO)
-router.register(r'purchase-orders', PurchaseOrderViewSet, basename='purchase-order')
+router.register(r'purchase-checkout', PurchaseOrderViewSet, basename='purchase-order')
 
 
 urlpatterns = [
